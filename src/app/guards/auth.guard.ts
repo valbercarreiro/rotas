@@ -1,10 +1,10 @@
 import { Observable } from 'rxjs/Rx';
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, CanLoad, Route } from '@angular/router';
 import { AuthService } from './../login/auth.service';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class AuthGuard implements CanActivate, CanLoad {
 
   constructor(
     private authService: AuthService, 
@@ -16,6 +16,11 @@ export class AuthGuard implements CanActivate {
     state: RouterStateSnapshot
   ): Observable<boolean> | boolean {
 
+    return this.verificarAcesso();
+
+  }
+
+  private verificarAcesso(){
     if(this.authService.usuarioEstaAutenticado()){
       return true;
     }
@@ -23,7 +28,10 @@ export class AuthGuard implements CanActivate {
     this.router.navigate(['/login']);
 
     return false;
-
   }
+
+  	canLoad(route: Route): Observable<boolean>|Promise<boolean>|boolean {
+      return this.verificarAcesso();
+    }
 
 }
